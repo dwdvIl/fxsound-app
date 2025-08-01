@@ -18,7 +18,7 @@ namespace BinaryData
     const int            GilroySemibold_ttfSize = 83948;
 
     extern const char*   speaker_svg;
-    const int            speaker_svgSize = 874;
+    const int            speaker_svgSize = 2069;
 
     extern const char*   min_window_svg;
     const int            min_window_svgSize = 542;

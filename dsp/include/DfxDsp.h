@@ -60,8 +60,17 @@ public:
     void getSpectrumBandValues(float* rp_band_values, int i_array_size);
 	void setVolumeNormalization(float target_rms);
 
+	// I'll just add this here, urgh, faster
+	float getInputGain() {
+		return input_gain;
+	}
+	void setInputGain(float gain) {
+		input_gain = gain;
+	}
+
 private:
 	DfxDspPrivate *data_;
+	float input_gain = 1.0;
 };
 
 #endif

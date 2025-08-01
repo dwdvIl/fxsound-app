@@ -46,7 +46,7 @@ extern "C" {
  *
  *   NOTE: This processing is always done in-place.
  */
-int dfxpModifyRealtypeSamples(PT_HANDLE *hp_dfxp, realtype *rp_samples, int i_num_sample_sets, int i_reorder)
+int dfxpModifyRealtypeSamples(PT_HANDLE *hp_dfxp, realtype *rp_samples, int i_num_sample_sets, int i_reorder, realtype input_gain)
 {
 	struct dfxpHdlType *cast_handle;
    int stereo_in_mode;
@@ -147,7 +147,7 @@ int dfxpModifyRealtypeSamples(PT_HANDLE *hp_dfxp, realtype *rp_samples, int i_nu
 		{
 			if (GraphicEqProcess(cast_handle->eq.graphicEq_hdl, 
 										 rp_samples, rp_samples, i_num_sample_sets, cast_handle->num_channels_out,
-										cast_handle->sampling_freq) != OKAY)
+										cast_handle->sampling_freq, input_gain) != OKAY)
 				return(NOT_OKAY);
 		}
 	}

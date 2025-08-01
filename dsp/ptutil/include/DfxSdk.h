@@ -153,7 +153,7 @@ int dfxgGetPlaybackStopped(PT_HANDLE *, int *);
 int dfxgQuit(PT_HANDLE **);
 
 int dfxpBeginProcess(PT_HANDLE *, int, int, int);
-int dfxpModifyShortIntSamples(PT_HANDLE *, short int *, short int *, int);
+int dfxpModifyShortIntSamples(PT_HANDLE *, short int *, short int *, int, realtype input_gain);
 
 int dfxgHideMainWindow(PT_HANDLE *);
 int dfxgShowMainWindow(PT_HANDLE *);

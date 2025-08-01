@@ -62,8 +62,8 @@ int PT_DECLSPEC sosGetCenterFreqArray(PT_HANDLE *, realtype **);
 int PT_DECLSPEC sosGetCenterFreqIndexArray(PT_HANDLE *, int **);
 
 /* sosProcessBuffer.cpp */
-int PT_DECLSPEC sosProcessBuffer(PT_HANDLE *hp_sos, realtype *rp_in_buf, realtype *rp_out_buf, int i_num_sample_sets, int i_num_channels);
-int PT_DECLSPEC sosProcessBufferNoBias(PT_HANDLE *hp_sos, realtype *rp_in_buf, realtype *rp_out_buf, int i_num_sample_sets, int i_num_channels);
-int PT_DECLSPEC sosProcessSurroundBuffer(PT_HANDLE *hp_sos, realtype *rp_in_buf, realtype *rp_out_buf, int i_num_sample_sets, int i_num_channels);
+int PT_DECLSPEC sosProcessBuffer(PT_HANDLE *hp_sos, realtype *rp_in_buf, realtype *rp_out_buf, int i_num_sample_sets, int i_num_channels, realtype input_gain);
+int PT_DECLSPEC sosProcessBufferNoBias(PT_HANDLE *hp_sos, realtype *rp_in_buf, realtype *rp_out_buf, int i_num_sample_sets, int i_num_channels, realtype input_gain);
+int PT_DECLSPEC sosProcessSurroundBuffer(PT_HANDLE *hp_sos, realtype *rp_in_buf, realtype *rp_out_buf, int i_num_sample_sets, int i_num_channels, realtype input_gain);
 
 #endif //_SOS_H

@@ -44,7 +44,7 @@ private:
 	static constexpr int LABEL_HEIGHT = 12;
 
 	void resized() override;
-	void valueChanged() override;
+	//void valueChanged() override;
 	void enablementChanged() override;
 	bool keyPressed(const KeyPress& key) override;
 
@@ -133,6 +133,8 @@ private:
 		Label endpoint_title_;
 		ToggleButton volume_normalizer_toggle_;
 		FxVolumeSlider volume_;
+		Label input_gain_title_;
+		FxVolumeSlider input_gain_slider_;
 	};
 
 	class GeneralSettingsPane : public SettingsPane

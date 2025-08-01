@@ -125,7 +125,7 @@ int dfxpUniversalSetSignalFormat(PT_HANDLE *hp_dfxp, int i_bps, int i_nch, int i
  *   This function can be called with each buffer.
  *
  */
-int dfxpUniversalModifySamples(PT_HANDLE *hp_dfxp, short int *si_input_samples, short int *si_output_samples, int i_num_sample_sets, int i_check_for_duplicate_buffers)
+int dfxpUniversalModifySamples(PT_HANDLE *hp_dfxp, short int *si_input_samples, short int *si_output_samples, int i_num_sample_sets, int i_check_for_duplicate_buffers, realtype input_gain)
 {	
 	struct dfxpHdlType *cast_handle;
 
@@ -209,7 +209,7 @@ int dfxpUniversalModifySamples(PT_HANDLE *hp_dfxp, short int *si_input_samples, 
 	{
 		if ( (cast_handle->universal.last_called_bps == 8) || (cast_handle->universal.last_called_bps == 16) || (cast_handle->universal.last_called_bps == 24) )
 		{
-			if (dfxpModifyShortIntSamples(hp_dfxp, (short int *)bp_in, (short int *)bp_out, num_process_loop) != OKAY)
+			if (dfxpModifyShortIntSamples(hp_dfxp, (short int *)bp_in, (short int *)bp_out, num_process_loop, input_gain) != OKAY)
 				return(NOT_OKAY);
 		}
 		else if ( cast_handle->universal.last_called_bps == 32 )
@@ -221,7 +221,7 @@ int dfxpUniversalModifySamples(PT_HANDLE *hp_dfxp, short int *si_input_samples, 
 			for(index=0; index < (num_process_loop * cast_handle->universal.last_called_nch); index++)
 				r_out[index] = r_in[index];
 
-			if (dfxpModifyRealtypeSamples(hp_dfxp, r_out, num_process_loop, i_reorder) != OKAY)
+			if (dfxpModifyRealtypeSamples(hp_dfxp, r_out, num_process_loop, i_reorder, input_gain) != OKAY)
 				return(NOT_OKAY);
 		}
 
@@ -233,7 +233,7 @@ int dfxpUniversalModifySamples(PT_HANDLE *hp_dfxp, short int *si_input_samples, 
 	{
 		if ( (cast_handle->universal.last_called_bps == 8) || (cast_handle->universal.last_called_bps == 16) || (cast_handle->universal.last_called_bps == 24) )
 		{
-			if (dfxpModifyShortIntSamples(hp_dfxp, (short int *)bp_in, (short int *)bp_out, leftover_sample_sets) != OKAY)
+			if (dfxpModifyShortIntSamples(hp_dfxp, (short int *)bp_in, (short int *)bp_out, leftover_sample_sets, input_gain) != OKAY)
 				return(NOT_OKAY);
 		}
 		else if ( cast_handle->universal.last_called_bps == 32 )
@@ -245,7 +245,7 @@ int dfxpUniversalModifySamples(PT_HANDLE *hp_dfxp, short int *si_input_samples, 
 			for(index=0; index < (leftover_sample_sets * cast_handle->universal.last_called_nch); index++)
 				r_out[index] = r_in[index];
 
-			if (dfxpModifyRealtypeSamples(hp_dfxp, r_out, leftover_sample_sets, i_reorder) != OKAY)
+			if (dfxpModifyRealtypeSamples(hp_dfxp, r_out, leftover_sample_sets, i_reorder, input_gain) != OKAY)
 				return(NOT_OKAY);
 		}
 	}

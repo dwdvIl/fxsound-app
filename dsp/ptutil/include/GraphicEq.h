@@ -61,7 +61,8 @@ int PT_DECLSPEC GraphicEqProcess(PT_HANDLE *hp_GraphicEq,
 							realtype *rp_signal_out, /* Array to store the processed signal */
 							int i_num_sample_sets,   /* Number of mono sample points or stereo sample pairs */
 							int i_num_channels,      /* 1 for mono, 2 for stereo */
-                     realtype r_samp_freq     /* Sampling frequency in hz. */
+							realtype r_samp_freq,    /* Sampling frequency in hz. */
+							realtype input_gain      /* The input volume, now adjustable! */
 							);
 
 #endif //_GRAPHIC_EQ_H

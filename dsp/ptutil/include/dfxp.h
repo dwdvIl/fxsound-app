@@ -53,7 +53,7 @@ int dfxpInit(PT_HANDLE **, wchar_t *, int, int, int, int, int, long, int, int, i
 
 /* dfxpProcess */
 int dfxpSetValidBits(PT_HANDLE *, int);
-int dfxpModifyRealtypeSamples(PT_HANDLE *, realtype *, int, int);
+int dfxpModifyRealtypeSamples(PT_HANDLE *, realtype *, int, int, realtype input_gain);
 int dfxpClearPreviousBufferedAudio(PT_HANDLE *);
 
 /* dfxpQuit */
@@ -86,7 +86,7 @@ int dfxpSpectrumGetBandValues(PT_HANDLE *, realtype *, int);
 /* dfxpUniversal */
 int dfxpUniversalInit(PT_HANDLE **, long, int, CSlout *);
 int dfxpUniversalSetSignalFormat(PT_HANDLE *, int, int, int, int);
-int dfxpUniversalModifySamples(PT_HANDLE *, short int *, short int *, int, int);
+int dfxpUniversalModifySamples(PT_HANDLE *, short int *, short int *, int, int, realtype input_gain);
 int dfxpUniversalCheckParentCompatibility(PT_HANDLE *, int, int *);
 
 #endif //_DFXP_H_

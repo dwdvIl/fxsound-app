@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *   PTNOTE- this appears to have a serious problem with shelf functions, the processing
  *   method uses a form specific to the coeff symmetry that occurs with parametric filters.
  */
-int PT_DECLSPEC sosProcessBuffer(PT_HANDLE *hp_sos, realtype *rp_in_buf, realtype *rp_out_buf, int i_num_sample_sets, int i_num_channels)
+int PT_DECLSPEC sosProcessBuffer(PT_HANDLE *hp_sos, realtype *rp_in_buf, realtype *rp_out_buf, int i_num_sample_sets, int i_num_channels, realtype input_gain)
 {
 	struct sosHdlType *cast_handle;
 
@@ -67,12 +67,12 @@ int PT_DECLSPEC sosProcessBuffer(PT_HANDLE *hp_sos, realtype *rp_in_buf, realtyp
 #ifdef SOS_DO_DC_BLOCKING
 			realtype in_tmp;
 			// Do DC blocking filtering.
-			in_tmp = rp_in_buf[k];
+			in_tmp = rp_in_buf[k] * input_gain;
 			in1 = in_tmp - cast_handle->in1_old + (realtype)SOS_DCBLOCK_ALPHA * cast_handle->outDC1_old;
 			cast_handle->in1_old = in_tmp;
 			cast_handle->outDC1_old = in1;
 #else
-			in1 = rp_in_buf[k];
+			in1 = rp_in_buf[k] * input_gain;
 #endif //SOS_DO_DC_BLOCKING
 
 			/* Outputs are also set to handle the case where all sections are off */
@@ -102,18 +102,18 @@ int PT_DECLSPEC sosProcessBuffer(PT_HANDLE *hp_sos, realtype *rp_in_buf, realtyp
 #ifdef SOS_DO_DC_BLOCKING
 			// Do DC blocking filtering.
 			realtype in_tmp;
-			in_tmp = rp_in_buf[k];
+			in_tmp = rp_in_buf[k] * input_gain;
 			in1 = in_tmp - cast_handle->in1_old + (realtype)SOS_DCBLOCK_ALPHA * cast_handle->outDC1_old;
 			cast_handle->in1_old = in_tmp;
 			cast_handle->outDC1_old = in1;
 
-			in_tmp = rp_in_buf[k+1];
+			in_tmp = rp_in_buf[k+1] * input_gain;
 			in2 = in_tmp - cast_handle->in2_old + (realtype)SOS_DCBLOCK_ALPHA * cast_handle->outDC2_old;
 			cast_handle->in2_old = in_tmp;
 			cast_handle->outDC2_old = in2;
 #else
-			in1 = rp_in_buf[k];
-			in2 = rp_in_buf[k+1];
+			in1 = rp_in_buf[k] * input_gain;
+			in2 = rp_in_buf[k+1] * input_gain;
 #endif //SOS_DO_DC_BLOCKING
 
 			/* Outputs are also set to handle the case where all sections are off */
@@ -194,7 +194,7 @@ int PT_DECLSPEC sosProcessBuffer(PT_HANDLE *hp_sos, realtype *rp_in_buf, realtyp
  *   This function is for mono or stereo signals only.
  *   This is a special version that does not include any DC bias component for accuracy critical usage.
  */
-int PT_DECLSPEC sosProcessBufferNoBias(PT_HANDLE *hp_sos, realtype *rp_in_buf, realtype *rp_out_buf, int i_num_sample_sets, int i_num_channels)
+int PT_DECLSPEC sosProcessBufferNoBias(PT_HANDLE *hp_sos, realtype *rp_in_buf, realtype *rp_out_buf, int i_num_sample_sets, int i_num_channels, realtype input_gain)
 {
 	struct sosHdlType *cast_handle;
 
@@ -219,7 +219,7 @@ int PT_DECLSPEC sosProcessBufferNoBias(PT_HANDLE *hp_sos, realtype *rp_in_buf, r
 		if( i_num_channels == 1)
 		{
 			/* Outputs are also set to handle the case where all sections are off */
-			in1 = rp_in_buf[k];
+			in1 = rp_in_buf[k] * input_gain;
 			out1 = in1;
 			for(i=0; i<cast_handle->num_active_sections; i++)
 			{
@@ -247,9 +247,9 @@ int PT_DECLSPEC sosProcessBufferNoBias(PT_HANDLE *hp_sos, realtype *rp_in_buf, r
 		}
 		else /* Stereo case */
 		{
-			in1 = rp_in_buf[k];
+			in1 = rp_in_buf[k] * input_gain;
 			out1 = in1;
-			in2 = rp_in_buf[k+1];
+			in2 = rp_in_buf[k+1] * input_gain;
 			out2 = in2;
 			for(i=0; i<cast_handle->num_active_sections; i++)
 			{
@@ -300,7 +300,7 @@ int PT_DECLSPEC sosProcessBufferNoBias(PT_HANDLE *hp_sos, realtype *rp_in_buf, r
  *   Processes the passed in buffer using the current sos handle settings.
  *   This function is for Surround Sound signals. Only puts bass boost on bass channel, no other eq on bass channel.
  */
-int PT_DECLSPEC sosProcessSurroundBuffer(PT_HANDLE *hp_sos, realtype *rp_in_buf, realtype *rp_out_buf, int i_num_sample_sets, int i_num_channels)
+int PT_DECLSPEC sosProcessSurroundBuffer(PT_HANDLE *hp_sos, realtype *rp_in_buf, realtype *rp_out_buf, int i_num_sample_sets, int i_num_channels, realtype input_gain)
 {
 	struct sosHdlType *cast_handle;
 
@@ -340,7 +340,7 @@ int PT_DECLSPEC sosProcessSurroundBuffer(PT_HANDLE *hp_sos, realtype *rp_in_buf,
 			}
 
 			/* Outputs are also set to handle the case where all sections are off */
-			in = rp_in_buf[j+k];
+			in = rp_in_buf[j+k] * input_gain;
 			out = in;
 			for(i=start; i<end; i++)
 			{

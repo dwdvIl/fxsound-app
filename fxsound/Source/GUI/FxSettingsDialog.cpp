@@ -36,7 +36,7 @@ FxVolumeSlider::FxVolumeSlider()
 
 void FxVolumeSlider::setVolumeValue(float value)
 {
-	int display_value = int(value / 0.125f);
+	int display_value = int(value / 0.125f); // This only adds to the confusion
 	auto text = String::formatted("%d", display_value);
 	value_label_.setText(text, NotificationType::dontSendNotification);
 
@@ -57,6 +57,8 @@ void FxVolumeSlider::resized()
 	value_label_.setBounds(value_label_.getX(), (getHeight() - LABEL_HEIGHT) / 2, FxTheme::SLIDER_THUMB_RADIUS * 3, LABEL_HEIGHT);
 }
 
+// This should be in a lambda so it's customizable
+/*
 void FxVolumeSlider::valueChanged()
 {
 	auto value = getValue();
@@ -69,7 +71,7 @@ void FxVolumeSlider::valueChanged()
 
 		controller.setVolumeNormalization((float)value);
 	}
-}
+}*/
 
 void FxVolumeSlider::enablementChanged()
 {
@@ -278,8 +280,7 @@ void FxSettingsDialog::SettingsPane::paint(Graphics&)
 }
 
 FxSettingsDialog::AudioSettingsPane::AudioSettingsPane() :
-	SettingsPane("Audio"),
-	volume_normalizer_toggle_(TRANS("Normalize Volume"))
+	SettingsPane("Audio"), volume_normalizer_toggle_(TRANS("Normalize Volume"))
 {
 	FxModel::getModel().addListener(this);
 
@@ -313,10 +314,9 @@ FxSettingsDialog::AudioSettingsPane::AudioSettingsPane() :
 				}
 			}
 		};
-
+	
 	volume_normalizer_toggle_.setMouseCursor(MouseCursor::PointingHandCursor);
 	volume_normalizer_toggle_.setColour(ToggleButton::ColourIds::tickColourId, getLookAndFeel().findColour(TextButton::textColourOnId));
-	volume_normalizer_toggle_.setColour(ToggleButton::ColourIds::textColourId, getLookAndFeel().findColour(TextButton::textColourOnId));
 	volume_normalizer_toggle_.setWantsKeyboardFocus(true);
 
 	auto& controller = FxController::getInstance();
@@ -333,19 +333,61 @@ FxSettingsDialog::AudioSettingsPane::AudioSettingsPane() :
 			volume_.setEnabled(false);
 		}
 	};
+	
+	input_gain_title_.setColour(Label::ColourIds::textColourId, getLookAndFeel().findColour(TextButton::textColourOnId));
+	input_gain_title_.setJustificationType(Justification::centredLeft);
 
 	auto volume_normalization_rms = controller.getVolumeNormalization();
 	volume_.setSliderStyle(Slider::LinearHorizontal);
-	volume_.setRange(0.125, 0.5, 0.125);
+	volume_.setRange(0.125f, 0.5f, 0.125f);
 	volume_.setValue(volume_normalization_rms);
 	volume_.setVolumeValue(volume_normalization_rms);
 	volume_.setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
 	volume_.setEnabled(enabled);
 	addAndMakeVisible(&volume_);
+
+	volume_.onValueChange = [this]() {
+		auto value = volume_.getValue();
+
+		auto& controller = FxController::getInstance();
+
+		if (value != controller.getVolumeNormalization())
+		{
+			volume_.setVolumeValue(value);
+
+			controller.setVolumeNormalization((float)value);
+		}
+	};
+
+	auto input_gain = 10.0 * 0.125 * log10(controller.getInputGain()); // Convert from dB to value
+	input_gain_slider_.setSliderStyle(Slider::LinearHorizontal);
+	input_gain_slider_.setRange(-2.25f, 2.25f, 0.125f); // -18 to 18 dB
+	input_gain_slider_.setValue(input_gain);
+	input_gain_slider_.setVolumeValue(input_gain);
+	input_gain_slider_.setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
+	input_gain_slider_.setEnabled(true);
+	addAndMakeVisible(&input_gain_slider_);
+
+	input_gain_slider_.onValueChange = [this]() {
+		auto value = input_gain_slider_.getValue();
+
+		auto& controller = FxController::getInstance();
+
+		if (value != controller.getInputGain())
+		{
+			input_gain_slider_.setVolumeValue(value);
+
+			// Convert dB to linear
+			value = pow(10.0, value / 0.125 / 10.0);
+			controller.setInputGain((float)value);
+		}
+	};
+
 	
 	addAndMakeVisible(&endpoint_title_);
 	addAndMakeVisible(&preferred_endpoint_);
 	addAndMakeVisible(&volume_normalizer_toggle_);
+	addAndMakeVisible(&input_gain_title_);
 
 	setText();
 }
@@ -372,6 +414,13 @@ void FxSettingsDialog::AudioSettingsPane::resized()
 	y = volume_normalizer_toggle_.getBottom() + 10;
 
 	volume_.setBounds(X_MARGIN, y, SLIDER_WIDTH, SLIDER_HEIGHT);
+	y = volume_.getBottom() + 10;
+
+	input_gain_title_.setBounds(X_MARGIN, y, getWidth() - X_MARGIN, TITLE_HEIGHT);
+	y = input_gain_title_.getBottom() + 10;
+
+	input_gain_slider_.setBounds(X_MARGIN, y, SLIDER_WIDTH, SLIDER_HEIGHT);
+
 }
 
 void FxSettingsDialog::AudioSettingsPane::paint(Graphics& g)
@@ -390,6 +439,9 @@ void FxSettingsDialog::AudioSettingsPane::setText()
 	endpoint_title_.setText(TRANS("Preferred output:"), NotificationType::dontSendNotification);
 	endpoint_title_.setFont(theme.getNormalFont());
 	preferred_endpoint_.setTextWhenNothingSelected(TRANS("Select preferred output"));
+
+	input_gain_title_.setText("Input gain (dB):", NotificationType::dontSendNotification);
+	input_gain_title_.setFont(theme.getNormalFont());
 
 	updateEndpointList();
 }
@@ -445,6 +497,7 @@ void FxSettingsDialog::AudioSettingsPane::mouseEnter(const MouseEvent& mouse_eve
 	Component::mouseEnter(mouse_event);
 
 	volume_.showValue(volume_.isMouseOver(false));
+	input_gain_slider_.showValue(input_gain_slider_.isMouseOver(false));
 }
 
 void FxSettingsDialog::AudioSettingsPane::mouseExit(const MouseEvent& mouse_event)
@@ -452,6 +505,7 @@ void FxSettingsDialog::AudioSettingsPane::mouseExit(const MouseEvent& mouse_even
 	Component::mouseEnter(mouse_event);
 
 	volume_.showValue(volume_.isMouseOver(false));
+	input_gain_slider_.showValue(input_gain_slider_.isMouseOver(false));
 }
 
 FxSettingsDialog::GeneralSettingsPane::GeneralSettingsPane() :

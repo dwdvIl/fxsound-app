@@ -108,7 +108,7 @@ int DfxDsp::processAudio(short int *si_input_samples, short int *si_output_sampl
 	}
 	else
 	{
-		return data_->processAudio(si_input_samples, si_output_samples, i_num_sample_sets, i_check_for_duplicate_buffers);
+		return data_->processAudio(si_input_samples, si_output_samples, i_num_sample_sets, i_check_for_duplicate_buffers, input_gain);
 	}
 }
 

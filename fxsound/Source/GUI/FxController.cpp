@@ -195,6 +195,11 @@ FxController::FxController() : message_window_(L"FxSoundHotkeys", (WNDPROC) even
 
 	volume_normalization_enabled_ = settings_.getBool("volume_normalization_enabled");
 	volume_normalization_rms_ = checkRMSValue((float)settings_.getDouble("volume_normalization_rms"));
+	volume_normalization_rms_ = (float)settings_.getDouble("volume_normalization_rms");
+
+	input_gain_ = (float)settings_.getDouble("input_gain");
+	// If setting doesn't exist, set it to 1 by default
+	if (input_gain_ == 0.0f) input_gain_ = 1.0f;
 	
 	SetWindowLongPtr(message_window_.getHandle(), GWLP_USERDATA, (LONG_PTR)this);
 
@@ -307,6 +312,9 @@ void FxController::init(FxMainWindow* main_window, FxSystemTrayView* system_tray
 		{
 			dfx_dsp_.setVolumeNormalization(volume_normalization_rms_);
 		}
+
+		// Stored value is alredy in dB
+		dfx_dsp_.setInputGain(input_gain_);
 		
 		FxModel::getModel().setEmail(settings_.getSecure("email").toLowerCase());
 
@@ -1208,6 +1216,15 @@ float FxController::checkRMSValue(float target_rms)
 	}
 
 	return target_rms;
+}
+
+float FxController::getInputGain() {
+	return dfx_dsp_.getInputGain();
+}
+void FxController::setInputGain(float gain) {
+	input_gain_ = gain;
+	dfx_dsp_.setInputGain(gain);
+	settings_.setDouble("input_gain", gain);
 }
 
 bool FxController::isAudioProcessing()

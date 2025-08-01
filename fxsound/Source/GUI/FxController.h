@@ -88,6 +88,8 @@ public:
 	float getVolumeNormalization() const;
 	void setVolumeNormalization(float target_rms);
 	float checkRMSValue(float target_rms);
+	float FxController::getInputGain();
+	void setInputGain(float gain);
     bool isAudioProcessing();
 	int getNumEqBands();
 	float getEqBandFrequency(int band_num);
@@ -215,6 +217,8 @@ private:
 	bool hide_notifications_;
 	bool volume_normalization_enabled_;
 	float volume_normalization_rms_;
+	
+	float input_gain_ = 1.0;
 
 	unsigned long audio_process_time_;
 	int audio_process_on_counter_;

@@ -45,7 +45,7 @@ extern "C" {
  */
 int dfxpModifyShortIntSamples(PT_HANDLE *hp_dfxp, short int *sip_input_samples, 
 													short int *sip_output_samples,
-								   	         int i_num_sample_sets)
+								   	         int i_num_sample_sets, realtype input_gain)
 {
 	struct dfxpHdlType *cast_handle;
 	int total_num_samples;
@@ -107,7 +107,7 @@ int dfxpModifyShortIntSamples(PT_HANDLE *hp_dfxp, short int *sip_input_samples,
 		(cast_handle->slout1)->Message_Wide(FIRST_LINE, cast_handle->wcp_msg1);
 	}
 
-	if (dfxpModifyRealtypeSamples(hp_dfxp, cast_handle->r_samples, i_num_sample_sets, i_reorder) != OKAY)
+	if (dfxpModifyRealtypeSamples(hp_dfxp, cast_handle->r_samples, i_num_sample_sets, i_reorder, input_gain) != OKAY)
 		return(NOT_OKAY);
 
 	/* Convert processed buffer back to int buffer format. Note that this
